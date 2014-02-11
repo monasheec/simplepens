@@ -1,0 +1,71 @@
+﻿<Window x:Class="PowerpointJabber.SimplePenWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:plugin="clr-namespace:PowerpointJabber"
+    ShowInTaskbar="True" WindowStartupLocation="Manual" Topmost="True" Top="40" Left="0" 
+    Closing="Window_Closing" WindowStyle="None" AllowsTransparency="True" Background="Transparent" Cursor="Arrow" 
+        SizeToContent="WidthAndHeight" Loaded="Window_Loaded">
+    <Viewbox x:Name="ViewboxContainer">
+        <WrapPanel Orientation="Vertical" HorizontalAlignment="Left">
+            <ItemsControl x:Name="PensControl">
+                <ItemsControl.Resources>
+                    <LinearGradientBrush x:Key="BrushGradientBackground" StartPoint="0,0" EndPoint="1,0" MappingMode="RelativeToBoundingBox">
+                        <LinearGradientBrush.GradientStops>
+                            <GradientStop Color="White" Offset="0"/>
+                            <GradientStop Color="Transparent" Offset="1"/>
+                        </LinearGradientBrush.GradientStops>
+                    </LinearGradientBrush>
+                    <DrawingBrush x:Key="CheckerboardBackground" Viewport="0,0,.25,.25" TileMode="Tile" Stretch="None">
+                        <DrawingBrush.Drawing>
+                            <DrawingGroup>
+                                <DrawingGroup.Children>
+                                    <GeometryDrawing Brush="DarkGray" Geometry="F1 M 0,0 5,0 5,10 10,10 10,5 0,5 0,0  Z"/>
+                                </DrawingGroup.Children>
+                            </DrawingGroup>
+                        </DrawingBrush.Drawing>
+                    </DrawingBrush>
+                </ItemsControl.Resources>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Button Click="Pen" Tag="{Binding Path=name}" Height="50" Width="50" ToolTip="{Binding Path=tooltip}"/>
+                            <Border BorderThickness="1" BorderBrush="Transparent" CornerRadius="2" Padding="5" Height="50" Width="50" IsHitTestVisible="False" Background="{Binding Path=Selected, Converter={x:Static plugin:Converters.boolToSelectedColourConverter}}">
+                                <Grid Width="40" Height="40">
+                                    <Grid Visibility="{Binding Path=type,Converter={x:Static plugin:Converters.penVisibilityConverter}}">
+                                        <Rectangle Fill="{StaticResource CheckerboardBackground}"/>
+                                        <Rectangle Fill="{StaticResource BrushGradientBackground}"/>
+                                        <Border BorderThickness="0" Padding="0" ClipToBounds="True" >
+                                            <Viewbox Height="40" Width="40">
+                                                <Grid Visibility="{Binding Path=IsHighlighter, Converter={x:Static plugin:Converters.reverseBoolToVisibilityConverter}}">
+                                                    <InkCanvas Background="Transparent" Strokes="{Binding Path=DrawnPenPreviewStroke}" Height="100" Width="100"/>
+                                                    <Polygon Height="100" Width="100" Points="{Binding Path=BrushPreviewPoints}" Fill="{Binding Path=penColour}" />
+                                                    <Image Height="100" Width="100" Source="Resources\MeTLPenOverlay.png"/>
+                                                </Grid>
+                                            </Viewbox>
+                                        </Border>
+                                    </Grid>
+                                    <Image Visibility="{Binding Path=type, Converter={x:Static plugin:Converters.eraserVisibilityConverter}}" Source="Resources\ShinyEraser.png"/>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical" Background="Transparent"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+            <Button x:Name="AddPageButton" Click="AddPage" Height="50" Width="50" ToolTip="Add Page">
+                <StackPanel>
+                    <Image Source="Resources\pptWhiteScreen.png"/>
+                </StackPanel>
+            </Button>
+            <!--<Button x:Name="SwitchToMeTLButton" Click="SwitchToMeTL" Height="50" Width="50" ToolTip="Switch to MeTL">
+                <StackPanel>
+                    <Image Source="Resources\pptSwitchDisplay.png"/>
+                </StackPanel>
+            </Button>-->
+        </WrapPanel>
+    </Viewbox>
+</Window>
