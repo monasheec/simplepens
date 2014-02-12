@@ -27,21 +27,21 @@
     <RootNamespace>PowerpointJabber</RootNamespace>
     <AssemblyName>SimplePens</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <ManifestCertificateThumbprint>19CA40E60BBFBC44BC1A0B2716F3FE31A6A4B07B</ManifestCertificateThumbprint>
-    <ManifestKeyFile>
-    </ManifestKeyFile>
+    <ManifestCertificateThumbprint>BA9D98BE92E202535513C0EE0D60BDCE125FEA81</ManifestCertificateThumbprint>
+    <ManifestKeyFile>SimplePens_TemporaryKey.pfx</ManifestKeyFile>
     <SignManifests>true</SignManifests>
-    <IsWebBootstrapper>True</IsWebBootstrapper>
+    <IsWebBootstrapper>False</IsWebBootstrapper>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <OldToolsVersion>4.0</OldToolsVersion>
     <VSTO_TrustAssembliesLocation>true</VSTO_TrustAssembliesLocation>
+    <TargetFrameworkProfile />
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <BootstrapperComponentsLocation>Relative</BootstrapperComponentsLocation>
     <PublishUrl>publish\</PublishUrl>
-    <InstallUrl>http://metl.adm.monash.edu/SimplePens/</InstallUrl>
+    <InstallUrl />
     <TargetCulture>en</TargetCulture>
     <ApplicationVersion>1.0.0.24</ApplicationVersion>
     <AutoIncrementApplicationRevision>true</AutoIncrementApplicationRevision>
@@ -49,12 +49,11 @@
     <UpdateInterval>0</UpdateInterval>
     <UpdateIntervalUnits>days</UpdateIntervalUnits>
     <ProductName>SimplePens</ProductName>
-    <PublisherName>eEducation Centre</PublisherName>
-    <SupportUrl>http://monash.edu/eeducation</SupportUrl>
+    <PublisherName />
+    <SupportUrl />
     <FriendlyName>SimplePens</FriendlyName>
     <OfficeApplicationDescription>This Add-in adds additional pen buttons to the slideshow windows, allowing for easier inking during Slide Shows.</OfficeApplicationDescription>
     <LoadBehavior>3</LoadBehavior>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -257,6 +256,7 @@
     <Compile Include="ThisAddIn.cs">
       <SubType>Code</SubType>
     </Compile>
+    <None Include="SimplePens_TemporaryKey.pfx" />
     <None Include="ThisAddIn.Designer.xml">
       <DependentUpon>ThisAddIn.cs</DependentUpon>
     </None>
