@@ -225,9 +225,6 @@
   -->
   <ItemGroup>
     <Compile Include="Converters.cs" />
-    <Compile Include="Logger.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
