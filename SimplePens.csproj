@@ -27,10 +27,11 @@
     <RootNamespace>PowerpointJabber</RootNamespace>
     <AssemblyName>SimplePens</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <ManifestCertificateThumbprint>4E92C5AB87076A4BEA32036360CF040324D59F62</ManifestCertificateThumbprint>
-    <ManifestKeyFile>PowerpointJabber_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestCertificateThumbprint>19CA40E60BBFBC44BC1A0B2716F3FE31A6A4B07B</ManifestCertificateThumbprint>
+    <ManifestKeyFile>
+    </ManifestKeyFile>
     <SignManifests>true</SignManifests>
-    <IsWebBootstrapper>False</IsWebBootstrapper>
+    <IsWebBootstrapper>True</IsWebBootstrapper>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
@@ -38,20 +39,22 @@
     <OldToolsVersion>4.0</OldToolsVersion>
     <VSTO_TrustAssembliesLocation>true</VSTO_TrustAssembliesLocation>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <BootstrapperComponentsLocation>Relative</BootstrapperComponentsLocation>
     <PublishUrl>publish\</PublishUrl>
-    <InstallUrl />
+    <InstallUrl>http://metl.adm.monash.edu/SimplePens/</InstallUrl>
     <TargetCulture>en</TargetCulture>
-    <ApplicationVersion>1.0.0.9</ApplicationVersion>
+    <ApplicationVersion>1.0.0.24</ApplicationVersion>
     <AutoIncrementApplicationRevision>true</AutoIncrementApplicationRevision>
     <UpdateEnabled>true</UpdateEnabled>
-    <UpdateInterval>7</UpdateInterval>
+    <UpdateInterval>0</UpdateInterval>
     <UpdateIntervalUnits>days</UpdateIntervalUnits>
     <ProductName>SimplePens</ProductName>
     <PublisherName>eEducation Centre</PublisherName>
-    <SupportUrl />
+    <SupportUrl>http://monash.edu/eeducation</SupportUrl>
     <FriendlyName>SimplePens</FriendlyName>
-    <OfficeApplicationDescription>This Add-in adds additional pen buttons to the slideshow windows, allowing for easier inking.</OfficeApplicationDescription>
+    <OfficeApplicationDescription>This Add-in adds additional pen buttons to the slideshow windows, allowing for easier inking during Slide Shows.</OfficeApplicationDescription>
     <LoadBehavior>3</LoadBehavior>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -151,6 +154,13 @@
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <!--
     This section specifies references for the project.
   -->
@@ -161,6 +171,9 @@
     </Reference>
     <Reference Include="Microsoft.Office.Tools.Common.v9.0, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Office.Tools.v9.0, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Vbe.Interop, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.Tools.Applications.Runtime.v9.0, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Office, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">
       <EmbedInteropTypes>True</EmbedInteropTypes>
@@ -172,6 +185,7 @@
     <Reference Include="System.AddIn" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core">
@@ -211,6 +225,9 @@
   -->
   <ItemGroup>
     <Compile Include="Converters.cs" />
+    <Compile Include="Logger.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -227,7 +244,6 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="PowerpointJabber_TemporaryKey.pfx" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -267,34 +283,15 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\pptBlackScreen.png">
-    </Resource>
-    <Resource Include="Resources\pptBuildNext.png">
-    </Resource>
-    <Resource Include="Resources\pptBuildPrevious.png">
-    </Resource>
-    <Resource Include="Resources\pptNormalScreen.png">
-    </Resource>
-    <Resource Include="Resources\pptPaintbrush.png">
-    </Resource>
     <Resource Include="Resources\pptWhiteScreen.png">
     </Resource>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\pptCloseSlideshow.png" />
-    <Resource Include="Resources\pptEraser.png" />
-    <Resource Include="Resources\pptSelect.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\pptSwitchDisplay.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\MeTLHighlighterOverlay.png" />
     <Resource Include="Resources\MeTLPenOverlay.png" />
     <Resource Include="Resources\ShinyEraser.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\ArrowCursor.png" />
   </ItemGroup>
   <!-- Include the build rules for a C# project. -->
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

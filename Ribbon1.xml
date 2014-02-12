@@ -4,8 +4,8 @@
     <tabs>
       <tab idMso="TabAddIns">
         <group id="MyGroup"
-               label="Simple Pens">
-          <labelControl id="SimplePensLabel" label="Enable SimplePens:"/>
+               label="Simple Pens 3">
+          <labelControl id="SimplePensLabel" label="Enable SimplePens 3:"/>
           <checkBox id="ToggleCustomSlideShowForPresenter" label="when using Presenter view" getPressed="getSSPlusEnabledForPresenter" onAction="DisplayPresentationForPresenter"/>
           <checkBox id="ToggleCustomSlideShowForDefault" label="when not using Presenter view" getPressed="getSSPlusEnabledForDefault" onAction="DisplayPresentationForDefault"/>
         </group>

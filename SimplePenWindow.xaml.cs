@@ -27,14 +27,6 @@ namespace PowerpointJabber
 {
     public partial class SimplePenWindow : Window
     {
-        private bool presenterView
-        {
-            get
-            {
-                bool isPresenter = WindowsInteropFunctions.presenterActive;
-                return isPresenter;
-            }
-        }
         public List<EditingButton> pens;
         private List<SlideIndicator> slides = new List<SlideIndicator>();
         private EditingButton currentPen;
@@ -68,7 +60,8 @@ namespace PowerpointJabber
         }
         private DispatcherTimer backgroundPollingTimer()
         {
-            return new DispatcherTimer(TimeSpan.FromMilliseconds(250),DispatcherPriority.Background,delegate
+            if (this.Dispatcher == null) return null;
+            return new DispatcherTimer(TimeSpan.FromMilliseconds(250), DispatcherPriority.Background, delegate
             {
                 try
                 {
@@ -84,7 +77,7 @@ namespace PowerpointJabber
                         this.WindowState = state.isVisible ? WindowState.Normal : WindowState.Minimized;
                     if (!Double.IsNaN(state.X) && this.Left != state.X)
                         this.Left = state.X;
-                    if (presenterView)
+                    if (WindowsInteropFunctions.presenterActive)
                     {
                         if (!Double.IsNaN(state.Y) && !Double.IsNaN(state.Height))
                         {
@@ -101,7 +94,6 @@ namespace PowerpointJabber
                         && ThisAddIn.instance.Application.ActivePresentation != null
                         && ThisAddIn.instance.Application.ActivePresentation.SlideShowWindow != null
                         && ThisAddIn.instance.Application.ActivePresentation.SlideShowWindow.View != null
-                        && ThisAddIn.instance.Application.ActivePresentation.SlideShowWindow.View.PointerType != null
                         && ThisAddIn.instance.Application.ActivePresentation.SlideShowWindow.View.PointerColor != null)
                     {
                         switch (ThisAddIn.instance.Application.ActivePresentation.SlideShowWindow.View.PointerType)
@@ -136,10 +128,10 @@ namespace PowerpointJabber
                     }
                 }
                 catch (Exception) { }
-            },this.Dispatcher);
+            }, this.Dispatcher);
         }
 
-        private bool shouldWorkaroundClickAdvance { get { return presenterView && !pptVersionIs2010; } }
+        private bool shouldWorkaroundClickAdvance { get { return WindowsInteropFunctions.presenterActive && !pptVersionIs2010; } }
         private bool pptVersionIs2010
         {
             get
@@ -174,13 +166,16 @@ namespace PowerpointJabber
             foreach (var pen in pens)
             {
                 if (pen == button)
+                {
                     pen.Selected = true;
+                }
                 else pen.Selected = false;
             }
         }
         private void Pen(object sender, RoutedEventArgs e)
         {
             var internalCurrentPen = pens.Where(c => c.name == ((FrameworkElement)sender).Tag.ToString()).FirstOrDefault();
+            Logger.Info("{0} pen selected by SimplePens", internalCurrentPen.name);
             switch (internalCurrentPen.type)
             {
                 case EditingButton.EditingType.Eraser:
@@ -201,8 +196,21 @@ namespace PowerpointJabber
         }
         private void EndSlideShow(object sender, RoutedEventArgs e)
         {
-            if (ThisAddIn.instance.Application.SlideShowWindows.Count > 0)
-                ThisAddIn.instance.Application.ActivePresentation.SlideShowWindow.View.Exit();
+            if (backgroundPolling != null)
+            {
+                try
+                {
+                    backgroundPolling.Stop();
+                    backgroundPolling = null;
+                }
+                catch (Exception) { }
+            }
+            if (ThisAddIn.instance != null && ThisAddIn.instance.Application != null && ThisAddIn.instance.Application.SlideShowWindows != null && ThisAddIn.instance.Application.SlideShowWindows.Count > 0)
+                try
+                {
+                    ThisAddIn.instance.Application.ActivePresentation.SlideShowWindow.View.Exit();
+                }
+                catch (Exception) { }
             if (this != null)
             {
                 try
@@ -216,7 +224,11 @@ namespace PowerpointJabber
         {
             try
             {
-                backgroundPolling = null;
+                if (backgroundPolling != null)
+                {
+                    backgroundPolling.Stop();
+                    backgroundPolling = null;
+                }
                 foreach (var slide in slides)
                 {
                     slide.clickAdvance = clickAdvanceStates[slide.slideId];
@@ -227,8 +239,23 @@ namespace PowerpointJabber
             {
             }
         }
+        private void closeApplication(object sender, ExecutedRoutedEventArgs e)
+        {
+            try
+            {
+                if (backgroundPolling != null)
+                {
+                    backgroundPolling.Stop();
+                    backgroundPolling = null;
+                }
+                Close();
+            }
+            catch (Exception) { }
+        }
+
         private void AddPage(object sender, RoutedEventArgs e)
         {
+            Logger.Info("Page added by SimplePens");
             CustomLayout newSlide;
             if (ThisAddIn.instance.Application.ActivePresentation.SlideMaster.CustomLayouts.Count > 0)
                 newSlide = ThisAddIn.instance.Application.ActivePresentation.SlideMaster.CustomLayouts[1];
@@ -248,28 +275,6 @@ namespace PowerpointJabber
                 ReFocusPresenter();
             }
         }
-        private void SwitchToMeTL(object sender, RoutedEventArgs e)
-        {
-            WindowsInteropFunctions.switchToMeTL();
-        }
-        private void pageUp(object sender, ExecutedRoutedEventArgs e)
-        {
-            ThisAddIn.instance.Application.ActivePresentation.SlideShowWindow.View.Next();
-        }
-        private void pageDown(object sender, ExecutedRoutedEventArgs e)
-        {
-            ThisAddIn.instance.Application.ActivePresentation.SlideShowWindow.View.Previous();
-        }
-        private void closeApplication(object sender, ExecutedRoutedEventArgs e)
-        {
-            try
-            {
-                backgroundPolling = null;
-                Close();
-            }
-            catch (Exception) { }
-        }
-
         public class EditingButton : DependencyObject
         {
             public EditingButton(EditingType Type, string Name, System.Windows.Media.SolidColorBrush Color)
@@ -514,26 +519,30 @@ namespace PowerpointJabber
         {
             get
             {
+                if (ThisAddIn.instance == null || ThisAddIn.instance.Application == null || ThisAddIn.instance.Application.ActivePresentation == null || ThisAddIn.instance.Application.ActivePresentation.Slides == null || ThisAddIn.instance.Application.ActivePresentation.Slides.Count < 1)
+                    return null;
                 return ThisAddIn.instance.Application.ActivePresentation.Slides.FindBySlideID(slideId);
             }
         }
         public bool isCurrentSlide { get { return slide.SlideIndex == ThisAddIn.instance.Application.ActivePresentation.SlideShowWindow.View.CurrentShowPosition; } }
         public bool clickAdvance
         {
-            get { return slide.SlideShowTransition.AdvanceOnClick == Microsoft.Office.Core.MsoTriState.msoTrue; }
-            set { slide.SlideShowTransition.AdvanceOnClick = value ? Microsoft.Office.Core.MsoTriState.msoTrue : Microsoft.Office.Core.MsoTriState.msoFalse; }
+            get
+            {
+                if (slide == null) return false;
+                return slide.SlideShowTransition.AdvanceOnClick == Microsoft.Office.Core.MsoTriState.msoTrue;
+            }
+            set
+            {
+                if (slide == null) return;
+                slide.SlideShowTransition.AdvanceOnClick = value ? Microsoft.Office.Core.MsoTriState.msoTrue : Microsoft.Office.Core.MsoTriState.msoFalse;
+            }
         }
         public void setClickAdvance(bool state)
         {
-            if (clickAdvance != state)
+            if (slide != null && clickAdvance != state)
             {
-                var currentPosition = ThisAddIn.instance.Application.ActivePresentation.SlideShowWindow.View.GetClickIndex();
                 slide.SlideShowTransition.AdvanceOnClick = state ? Microsoft.Office.Core.MsoTriState.msoTrue : Microsoft.Office.Core.MsoTriState.msoFalse;
-                if (isCurrentSlide)
-                {
-                    ThisAddIn.instance.Application.ActivePresentation.SlideShowWindow.View.GotoClick(currentPosition);
-                    ThisAddIn.instance.Application.ActivePresentation.SlideShowWindow.View.State = PpSlideShowState.ppSlideShowRunning;
-                }
             }
         }
     }

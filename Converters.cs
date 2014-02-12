@@ -12,7 +12,6 @@ namespace PowerpointJabber
     class Converters
     {
         public static BoolToSelectedColourConverter boolToSelectedColourConverter = new BoolToSelectedColourConverter();
-        public static BoolToVisibilityConverter boolToVisibilityConverter = new BoolToVisibilityConverter();
         public static ReverseBoolToVisibilityConverter reverseBoolToVisibilityConverter = new ReverseBoolToVisibilityConverter();
         public static PenVisibilityConverter penVisibilityConverter = new PenVisibilityConverter();
         public static EraserVisibilityConverter eraserVisibilityConverter = new EraserVisibilityConverter();
@@ -63,17 +62,6 @@ namespace PowerpointJabber
             {
                 if (!(value is PowerpointJabber.SimplePenWindow.EditingButton.EditingType)) return false;
                 return (PowerpointJabber.SimplePenWindow.EditingButton.EditingType)value == SimplePenWindow.EditingButton.EditingType.Eraser ? Visibility.Visible : Visibility.Collapsed;
-            }
-            public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-            {
-                throw new NotImplementedException();
-            }
-        }
-        public class BoolToVisibilityConverter : IValueConverter
-        {
-            public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-            {
-                return (bool)value ? Visibility.Visible : Visibility.Collapsed;
             }
             public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
             {

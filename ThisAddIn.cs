@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
@@ -16,6 +16,25 @@ namespace PowerpointJabber
     {
         public static ThisAddIn instance;
         public SimplePenWindow SSSW;
+        private static string _version;
+        public static string version
+        {
+            get
+            {
+                if (!String.IsNullOrEmpty(_version)) return _version;
+                else
+                {
+                    var tempVersion = "SimplePens PowerPoint " + ThisAddIn.instance.Application.Version;
+                    if (!String.IsNullOrEmpty(tempVersion))
+                    {
+                        _version = tempVersion;
+                        return _version;
+                    }
+                    else
+                        return "unknown";
+                }
+            }
+        }
         public bool customPresenterIsEnabledForPresenterMode
         {
             get
@@ -25,6 +44,7 @@ namespace PowerpointJabber
             }
             set
             {
+                Logger.Info("Setting SimplePens enabled for presenter presentation mode");
                 Properties.Settings.Default.SimplePensEnabledForPresenterMode = value;
                 Properties.Settings.Default.Save();
             }
@@ -38,6 +58,7 @@ namespace PowerpointJabber
             }
             set
             {
+                Logger.Info("Setting SimplePens enabled for default presentation mode");
                 Properties.Settings.Default.SimplePensEnabledForDefaultMode = value;
                 Properties.Settings.Default.Save();
             }
@@ -45,6 +66,7 @@ namespace PowerpointJabber
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
             instance = this;
+            //Logger.StartLogger();
             this.Application.SlideShowBegin += onSlideShowBegin;
             this.Application.SlideShowEnd += onSlideShowEnd;
         }
@@ -54,6 +76,7 @@ namespace PowerpointJabber
             {
                 if (customPresenterIsEnabledForPresenterMode)
                 {
+                    Logger.Info("starting simplePens for presenter presentation mode");
                     SSSW = new SimplePenWindow();
                     SSSW.Show();
                 }
@@ -62,6 +85,7 @@ namespace PowerpointJabber
             {
                 if (customPresenterIsEnabledForDefaultMode)
                 {
+                    Logger.Info("starting simplePens for presenter presentation mode");
                     SSSW = new SimplePenWindow();
                     SSSW.Show();
                 }
@@ -71,6 +95,7 @@ namespace PowerpointJabber
         {
             if (SSSW != null)
             {
+                Logger.Info("Slideshow ended");
                 SSSW.Close();
                 SSSW = null;
             }
@@ -79,6 +104,7 @@ namespace PowerpointJabber
         {
             if (SSSW != null)
             {
+                Logger.Info("Shutting down SimplePens");
                 SSSW.Close();
                 SSSW = null;
             }

@@ -116,41 +116,40 @@ namespace PowerpointJabber
             title.Length = titleLength;
             return title.ToString();
         }
-        public static void switchToMeTL()
+        delegate bool ComparisonTest(string part);
+
+        private static Dictionary<IntPtr, string> FindWindowsByCaptionWithTest(ComparisonTest test)
         {
             Dictionary<IntPtr, string> mTitlesList = new Dictionary<IntPtr, string>();
+            Dictionary<IntPtr, string> finalList = new Dictionary<IntPtr, string>();
             EnumDelegate enumfunc = (EnumDelegate)delegate(IntPtr hWnd, int lParam)
             {
                 string title = GetWindowText(hWnd);
                 mTitlesList.Add(hWnd, title);
                 return true;
             };
-            IntPtr hDesktop = IntPtr.Zero; // current desktop
+            IntPtr hDesktop = IntPtr.Zero;
             bool success = _EnumDesktopWindows(hDesktop, enumfunc, IntPtr.Zero);
-            int successFrequency = 0;
             if (success)
             {
                 foreach (var KV in mTitlesList)
                 {
-                    if (KV.Value.StartsWith("MeTL") || KV.Value.EndsWith("- MeTL"))
+                    if ((bool)test(KV.Value))
                     {
-                        BringWindowToFront(KV.Key);
-                        successFrequency++;
+                        finalList.Add(KV.Key, KV.Value);
                     }
                 }
-                if (successFrequency == 0)
-                    System.Diagnostics.Process.Start("iexplore.exe", "-extoff http://metl.adm.monash.edu.au/MeTL2011/MeTL%20Presenter.application");
             }
-            else
-                System.Diagnostics.Process.Start("iexplore.exe", "-extoff http://metl.adm.monash.edu.au/MeTL2011/MeTL%20Presenter.application");
+            return finalList;
         }
+
         public static IntPtr presenterWindow
         {
             get
             {
                 try
                 {
-                    return FindWindowByCaption("PowerPoint Presenter View - [" + ThisAddIn.instance.Application.ActivePresentation.Windows[1].Caption + "]");
+                    return FindWindowsByCaptionWithTest((s) => s.Contains("PowerPoint Presenter View")).FirstOrDefault().Key;
                 }
                 catch (Exception)
                 {
@@ -176,7 +175,7 @@ namespace PowerpointJabber
         public static WindowStateData getAppropriateViewData()
         {
             var window = currentWindow();
-           //
+            //
             var stateData = new WindowStateData();
             var placementData = new WINDOWPLACEMENT();
             GetWindowPlacement(window, out placementData);
@@ -193,7 +192,7 @@ namespace PowerpointJabber
             {
                 stateData.X = 0;
                 stateData.Y = 0;
-                stateData.Height = System.Windows.Forms.Screen.FromHandle(window).WorkingArea.Height;  
+                stateData.Height = System.Windows.Forms.Screen.FromHandle(window).WorkingArea.Height;
             }
             return stateData;
         }

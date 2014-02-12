@@ -61,11 +61,6 @@
                     <Image Source="Resources\pptWhiteScreen.png"/>
                 </StackPanel>
             </Button>
-            <!--<Button x:Name="SwitchToMeTLButton" Click="SwitchToMeTL" Height="50" Width="50" ToolTip="Switch to MeTL">
-                <StackPanel>
-                    <Image Source="Resources\pptSwitchDisplay.png"/>
-                </StackPanel>
-            </Button>-->
         </WrapPanel>
     </Viewbox>
 </Window>
